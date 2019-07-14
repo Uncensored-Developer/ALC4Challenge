@@ -55,10 +55,11 @@ class AboutActivity : AppCompatActivity() {
             web_view.loadUrl(getString(R.string.about_url))
         } else {
             Snackbar.make(
-                root, "Please check your internet connection",
+                root, getString(R.string.check_internet),
                 Snackbar.LENGTH_LONG
-            ).setAction("Reload") { web_view.loadUrl(getString(R.string.about_url)) }
-                .show()
+            ).setAction(getString(R.string.reload)) {
+                web_view.loadUrl(getString(R.string.about_url))
+            }.show()
         }
     }
 
@@ -72,6 +73,7 @@ val Context.isConnected: Boolean
     get() {
         val connectivityManager =
             getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        return connectivityManager
-            .activeNetworkInfo?.isConnected == true && connectivityManager.activeNetworkInfo != null
+        return connectivityManager.run {
+            activeNetworkInfo != null && isConnected
+        }
     }
