@@ -2,8 +2,10 @@ package com.tobenna.ezike.alc40challenge1
 
 import android.content.Context
 import android.net.ConnectivityManager
+import android.net.http.SslError
 import android.os.Bundle
 import android.view.View
+import android.webkit.SslErrorHandler
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
@@ -24,11 +26,20 @@ class AboutActivity : AppCompatActivity() {
             settings.loadWithOverviewMode = true
             settings.useWideViewPort = true
             webViewClient = object : WebViewClient() {
+
+                override fun onReceivedSslError(
+                    view: WebView?,
+                    handler: SslErrorHandler?,
+                    error: SslError?
+                ) {
+                    handler?.proceed()
+                }
+
                 override fun shouldOverrideUrlLoading(
                     view: WebView?,
                     request: WebResourceRequest?
                 ): Boolean {
-                    view?.loadUrl(getString(R.string.about_url))
+                    view?.loadUrl(request?.url.toString())
                     progress_bar.visibility = View.VISIBLE
                     return true
                 }
@@ -46,10 +57,15 @@ class AboutActivity : AppCompatActivity() {
             Snackbar.make(
                 root, "Please check your internet connection",
                 Snackbar.LENGTH_LONG
-            )
+            ).setAction("Reload") { web_view.loadUrl(getString(R.string.about_url)) }
+                .show()
         }
     }
 
+    override fun onSupportNavigateUp(): Boolean {
+        onBackPressed()
+        return true
+    }
 }
 
 val Context.isConnected: Boolean
